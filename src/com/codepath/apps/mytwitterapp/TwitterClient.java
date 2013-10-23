@@ -55,6 +55,32 @@ public class TwitterClient extends OAuthBaseClient {
 
     }
     
+    //gets new tweets since the id specified, could have been used for pull to request
+    public void getNewTweets(AsyncHttpResponseHandler handler, long since_id) {
+    	String url = getApiUrl("statuses/home_timeline.json");
+    	
+	   	RequestParams params = new RequestParams();
+		params.put("count", String.valueOf(25)); 
+
+	   	//if max_id != 0, it's not the first load and we set max_id
+    	if( since_id != 0 ) {
+    		//only return tweets smaller than the passed max_id, this is for scrolling
+        	params.put("since_id", String.valueOf(since_id));
+    	}
+    	else {
+    		Log.d("DEBUG", "latest tweet id not set");
+    	}
+    	
+    	client.get(url, params, handler);
+
+    	//not sure how request only certain fields vs limit to fields with certain values
+    	/*RequestParams params = new RequestParams();
+    	params.put("page", String.valueOf(page));
+    	getClient().get(apiUrl, params, handler);*/
+    	
+
+    }
+    
     //get the user's account info
     public void getUserAccount(AsyncHttpResponseHandler handler) {
     	String url = getApiUrl("account/verify_credentials.json");

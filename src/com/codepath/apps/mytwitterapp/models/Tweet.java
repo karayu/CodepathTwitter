@@ -1,6 +1,5 @@
 package com.codepath.apps.mytwitterapp.models;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
@@ -53,13 +52,7 @@ public class Tweet extends Model {
 
 	}
 	
-	/*public Tweet( User user, String timestamp, String text, long id) {
-		this.user = user;
-		this.timestamp = timestamp;
-		this.text = text;
-		this.id = id;
-	}*/
-	
+	//generate an arraylist of tweets from a JSONArray, save them to ActiveAndroid model
 	public static ArrayList<Tweet> fromJson(JSONArray jsonArray) {
 		ArrayList<Tweet> tweets = new ArrayList<Tweet>(jsonArray.length());
 
@@ -76,6 +69,9 @@ public class Tweet extends Model {
 
 			if (tweet != null) {
 				tweets.add(tweet);
+				
+				//saves to persistence via ActiveAndroid
+				//tweet.save();
 			}
 		}
 
@@ -125,6 +121,24 @@ public class Tweet extends Model {
 		return min_id;
 	}
 	
+	//given an array of tweets, finds the highest id of all of them. useful for since_id. not used
+	public static long getMaxId(ArrayList<Tweet> tweets, long initial_max_id) {
+		long curr_id = 0;
+		long max_id = initial_max_id;
+		
+		for (int i = 0; i < tweets.size(); i++) {
+			curr_id = tweets.get(i).getTweetId();			
+			
+			if( max_id == 0) {
+				max_id = curr_id;
+			}
+			else if( curr_id > max_id) {
+				max_id = curr_id;
+			}
+		}		
+		
+		return max_id;
+	}
 	
 	
 	

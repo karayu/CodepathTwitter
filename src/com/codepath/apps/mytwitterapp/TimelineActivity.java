@@ -12,18 +12,21 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.codepath.apps.mytwitterapp.models.Tweet;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
+import eu.erikw.PullToRefreshListView;
+import eu.erikw.PullToRefreshListView.OnRefreshListener;
+
 public class TimelineActivity extends Activity {
 
-	private ListView lvTweets;
-	ArrayList<Tweet> tweets = new ArrayList<Tweet>();;
+	private PullToRefreshListView lvTweets;
+	//ArrayList<Tweet> tweets = new ArrayList<Tweet>();;
 	TweetsAdapter adapter;
 	long min_id = 0;
+	long max_id = 0;
 	
 	public static int COMPOSE_REQUEST_CODE = 1;
 	
@@ -31,17 +34,18 @@ public class TimelineActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_timeline);
-		lvTweets = (ListView)findViewById(R.id.lvTweets);
+		lvTweets = (PullToRefreshListView)findViewById(R.id.lvTweets);
 
-		
+		//populates the initial set of tweets
 		MyTwitterClientApp.getRestClient().getHomeTimeline( new JsonHttpResponseHandler() {
 			@Override
 			public void onSuccess(JSONArray jsonTweets) {
-			   tweets = Tweet.fromJson(jsonTweets);
+				ArrayList<Tweet> tweets = Tweet.fromJson(jsonTweets);
 			   adapter = new TweetsAdapter(getBaseContext(), tweets);
 			   lvTweets.setAdapter(adapter);
 			   
 			   min_id = Tweet.getMinId(tweets, min_id);
+			   //max_id = Tweet.getMinId(tweets, max_id);
 			   		
 			}
 			
@@ -65,15 +69,50 @@ public class TimelineActivity extends Activity {
 			}
 
 		});
+		
+        // Set a listener to be invoked when user pulls down
+        lvTweets.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Your code to refresh the list contents
+                // Make sure you call listView.onRefreshComplete()
+                // once the loading is done. This can be done from here or any
+                // place such as when the network request has completed successfully.
+                fetchTimelineAsync(0);
+            }
+        });
 	}
+	
+	//called for pulltorefresh. deletes everything and gets a set of new 25 tweets
+    public void fetchTimelineAsync(int page) {
+    	MyTwitterClientApp.getRestClient().getHomeTimeline(new JsonHttpResponseHandler() {
+            public void onSuccess(JSONArray json) {
+            	
+               ArrayList<Tweet> tweets = Tweet.fromJson(json);
+			   adapter.clear();
+			   adapter.addAll(tweets);
+			    
+			   min_id = Tweet.getMinId(tweets, min_id);
+			   //max_id = Tweet.getMinId(tweets, max_id);
+
+                // ...the data has come back, finish populating listview...
+                // Now we call onRefreshComplete to signify refresh has finished
+            	lvTweets.onRefreshComplete();
+            }
+
+            public void onFailure(Throwable e) {
+                Log.d("DEBUG", "Fetch timeline error: " + e.toString());
+            }
+        }, 0);
+    }
 	
 	//called on endless scroll
 	public void loadMoreTweets() {
-		MyTwitterClientApp.getRestClient().getHomeTimeline( new JsonHttpResponseHandler() {
+		MyTwitterClientApp.getRestClient().getNewTweets( new JsonHttpResponseHandler() {
 			@Override
 			public void onSuccess(JSONArray jsonTweets) {
 				adapter.addAll(Tweet.fromJson(jsonTweets));
-				min_id = Tweet.getMinId(Tweet.fromJson(jsonTweets), min_id);
+				max_id = Tweet.getMaxId(Tweet.fromJson(jsonTweets), min_id);
 			}
 
 			public void onFailure(Throwable e, JSONObject error) {
@@ -116,7 +155,6 @@ public class TimelineActivity extends Activity {
 			adapter.insert(tweet, 0);
 			
 		  } catch (JSONException e) {
-			// TODO Auto-generated catch block
 			Log.d("DEBUG", "tweet data is: " + d);
 
 			e.printStackTrace();

@@ -103,16 +103,17 @@ public class TimelineActivity extends Activity {
 		startActivityForResult(i,COMPOSE_REQUEST_CODE); 
 	}
 	
+	// the tweet is passed back in string form through the intent and we add it to the adapter
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 	  if (resultCode == RESULT_OK && requestCode == COMPOSE_REQUEST_CODE) {
-		  
+		 
 		  String d = data.getExtras().getString("tweet");
+		 
 		  try {
 			JSONObject tweetDetails = new JSONObject(d);
 			Tweet tweet = new Tweet(tweetDetails);
-			adapter.addAll(tweet);
-			
+			adapter.insert(tweet, 0);
 			
 		  } catch (JSONException e) {
 			// TODO Auto-generated catch block
@@ -123,7 +124,6 @@ public class TimelineActivity extends Activity {
 			        Toast.LENGTH_SHORT).show();
 			
 		  }
-		  //refresh screen
 	  }
 	} 
 

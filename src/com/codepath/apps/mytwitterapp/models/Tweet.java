@@ -107,8 +107,9 @@ public class Tweet extends Model {
 	}
 	
 	//given an array of tweets, finds the lowest id of all of them
-	public static long getMinId(ArrayList<Tweet> tweets, long min_id) {
+	public static long getMinId(ArrayList<Tweet> tweets, long initial_min_id) {
 		long curr_id = 0;
+		long min_id = initial_min_id;
 		
 		for (int i = 0; i < tweets.size(); i++) {
 			curr_id = tweets.get(i).getTweetId();			

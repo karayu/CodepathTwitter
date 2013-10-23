@@ -6,13 +6,4 @@
         android:showAsAction="never"
         android:title="@string/action_settings"/>
 
-        
-     <item
-        android:id="@+id/btCompose"
-        android:icon="@drawable/ic_compose"
-        android:showAsAction="ifRoom"
-        android:onClick="compose"
-        android:title="Compose">
-    </item>
-
 </menu>

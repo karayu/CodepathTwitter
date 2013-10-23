@@ -21,14 +21,12 @@ import com.activeandroid.query.Select;
 public class Tweet extends Model {
 	
 	  // Define database columns and associated fields
-	  @Column(name = "userId")
-	  String userId;
-	  @Column(name = "userHandle")
-	  String userHandle;
+	  @Column(name="user")
+	  User user;
 	  @Column(name = "timestamp")
 	  String timestamp;
-	  @Column(name = "body")
-	  String body;
+	  @Column(name = "text")
+	  String text;
 
 	
 	
@@ -36,10 +34,12 @@ public class Tweet extends Model {
 		super();
 		
 	    try {
-	        this.userId = object.getString("user_id");
-	        this.userHandle = object.getString("user_username");
-	        this.timestamp = object.getString("timestamp");
-	        this.body = object.getString("body");
+	 
+	        this.user = new User( object.getJSONObject("user"));
+	        this.timestamp = object.getString("created_at");
+	        this.text = object.getString("text");
+	        
+	        
 	      } catch (JSONException e) {
 	        e.printStackTrace();
 	      }
@@ -49,30 +49,35 @@ public class Tweet extends Model {
 	public static ArrayList<Tweet> fromJson(JSONArray jsonArray) {
 		ArrayList<Tweet> tweets = new ArrayList<Tweet>(jsonArray.length());
 
-		    for (int i=0; i < jsonArray.length(); i++) {
-		        JSONObject tweetJson = null;
-		        try {
-		            tweetJson = jsonArray.getJSONObject(i);
-		        } catch (Exception e) {
-		            e.printStackTrace();
-		            continue;
-		        }
+		for (int i = 0; i < jsonArray.length(); i++) {
+			JSONObject tweetJson = null;
+			try {
+				tweetJson = jsonArray.getJSONObject(i);
+			} catch (Exception e) {
+				e.printStackTrace();
+				continue;
+			}
 
-		    Tweet tweet = new Tweet(tweetJson);
-		    //tweet.save
-		    //tweets.add(tweet);
+			Tweet tweet = new Tweet(tweetJson);
+
+			if (tweet != null) {
+				tweets.add(tweet);
+			}
 		}
 
 		return tweets;
 	}
 
 	
-
-	
 	// Getters
-	public String getUserID() {
-		return userId;
+	public User getUser() {
+		return user;
 	}
+	
+	public String getText() {
+		return text;
+	}
+	
 	
 	// Record Finders
 	public static Tweet byId(long id) {

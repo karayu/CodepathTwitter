@@ -1,5 +1,8 @@
 package com.codepath.apps.mytwitterapp.models;
 
+import java.util.ArrayList;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -36,6 +39,7 @@ public class User extends Model {
 	}
 
 
+
 	public String getName() {
 		return name;
 	}
@@ -49,7 +53,6 @@ public class User extends Model {
 	public String getProfileImageUrl() {
 		return profile_image_url;
 	}
-
 
 
 	public String getScreenName() {

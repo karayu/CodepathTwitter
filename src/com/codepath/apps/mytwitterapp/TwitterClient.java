@@ -4,6 +4,7 @@ import org.scribe.builder.api.Api;
 import org.scribe.builder.api.TwitterApi;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.codepath.oauth.OAuthBaseClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -32,27 +33,48 @@ public class TwitterClient extends OAuthBaseClient {
         super(context, REST_API_CLASS, REST_URL, REST_CONSUMER_KEY, REST_CONSUMER_SECRET, REST_CALLBACK_URL);
     }
     
-    public void getHomeTimeline(AsyncHttpResponseHandler handler) {
+    public void getHomeTimeline(AsyncHttpResponseHandler handler, long max_id) {
     	String url = getApiUrl("statuses/home_timeline.json");
-    	client.get(url, null, handler);
     	
+	   	RequestParams params = new RequestParams();
+		params.put("count", String.valueOf(25)); 
+
+	   	//if max_id != 0, it's not the first load and we set max_id
+    	if( max_id != 0 ) {
+    		//only return tweets smaller than the passed max_id, this is for scrolling
+        	params.put("max_id", String.valueOf(max_id-1));
+    	}
+    	
+    	client.get(url, params, handler);
+
+    	//not sure how request only certain fields vs limit to fields with certain values
     	/*RequestParams params = new RequestParams();
     	params.put("page", String.valueOf(page));
     	getClient().get(apiUrl, params, handler);*/
     	
-    	
 
     }
     
-    // CHANGE THIS
-    // DEFINE METHODS for different API endpoints here
-    public void getInterestingnessList(AsyncHttpResponseHandler handler) {
-        String apiUrl = getApiUrl("?nojsoncallback=1&method=flickr.interestingness.getList");
-        // Can specify query string params directly or through RequestParams.
-        RequestParams params = new RequestParams();
-        params.put("format", "json");
-        client.get(apiUrl, params, handler);
+    //get the user's account info
+    public void getUserAccount(AsyncHttpResponseHandler handler) {
+    	String url = getApiUrl("account/verify_credentials.json");
+    	client.get(url,  null, handler);	
+
     }
+    
+    //tweet a message
+    public void tweet(AsyncHttpResponseHandler handler, String msg) {
+    	
+    	Log.d("DEBUG", "in twitterclient");
+    	Log.d("DEBUG", "tweet msg is: " + msg);
+    	String url = getApiUrl("statuses/update.json");
+    	
+	   	RequestParams params = new RequestParams();
+		params.put("status", msg); 
+    	client.post(url, params, handler);	
+
+    }
+    
     
     /* 1. Define the endpoint URL with getApiUrl and pass a relative path to the endpoint
      * 	  i.e getApiUrl("statuses/home_timeline.json");

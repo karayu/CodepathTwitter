@@ -12,9 +12,9 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
 import android.widget.Toast;
 
+import com.codepath.apps.mytwitterapp.fragments.TweetsListFragment;
 import com.codepath.apps.mytwitterapp.models.Tweet;
 import com.codepath.apps.mytwitterapp.models.User;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -22,7 +22,9 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 public class TimelineActivity extends FragmentActivity {
 
 	//private PullToRefreshListView lvTweets;
-	ListView lvTweets;
+	//ListView lvTweets;
+	TweetsListFragment fragmentTweets;
+	
 	ArrayList<Tweet> tweets = new ArrayList<Tweet>();
 	TweetsAdapter adapter;
 	long min_id = 0;
@@ -38,7 +40,7 @@ public class TimelineActivity extends FragmentActivity {
 		setContentView(R.layout.activity_timeline);
 		//lvTweets = (PullToRefreshListView)findViewById(R.id.lvTweets);
 		
-		lvTweets = (ListView)findViewById(R.id.lvTweets);
+		//lvTweets = (ListView)findViewById(R.id.lvTweets);
 		Log.d("DEBUG", "got the listview!");
 		
 		MyTwitterClientApp.getRestClient().getUserAccount( new JsonHttpResponseHandler() {
@@ -58,16 +60,23 @@ public class TimelineActivity extends FragmentActivity {
 			
 		});
 		
+		
+		//get the fragment for tweets list
+		fragmentTweets = (TweetsListFragment)getSupportFragmentManager()
+				.findFragmentById(R.id.fragmentTweets);
+		
+		
 		//populates the initial set of tweets
 		MyTwitterClientApp.getRestClient().getHomeTimeline( new JsonHttpResponseHandler() {
 			@Override
 			public void onSuccess(JSONArray jsonTweets) {
-			   ArrayList<Tweet> tweets = Tweet.fromJson(jsonTweets);
-			   
-			   adapter = new TweetsAdapter(getBaseContext(), tweets);
-			   lvTweets.setAdapter(adapter);
-			   
-			   min_id = Tweet.getMinId(tweets, min_id);
+              //create tweets array and make listview
+				
+				ArrayList<Tweet> tweets = Tweet.fromJson(jsonTweets);
+				fragmentTweets.getAdapter().addAll(tweets);
+				
+				//this part should be removed
+			    min_id = Tweet.getMinId(tweets, min_id);
 			   		
 			}
 			
@@ -83,14 +92,14 @@ public class TimelineActivity extends FragmentActivity {
 		
 		
 		//endless scroll listener
-		lvTweets.setOnScrollListener(new EndlessScrollListener() {
+		/*lvTweets.setOnScrollListener(new EndlessScrollListener() {
 			@Override
 			public void onLoadMore(int page, int totalItemsCount) {
 				loadMoreTweets();
 
 			}
 
-		});
+		});*/
 		
         // Set a listener to be invoked when user pulls down
         /*lvTweets.setOnRefreshListener(new OnRefreshListener() {

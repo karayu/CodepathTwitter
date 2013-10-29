@@ -10,7 +10,7 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 
-@Table(name = "Tweets")
+@Table(name = "Users")
 public class User extends Model {
 
 	  @Column(name="name")
@@ -30,7 +30,6 @@ public class User extends Model {
 	        this.name = object.getString("name");
 	        this.profile_image_url = object.getString("profile_image_url");
 	        this.screen_name = object.getString("screen_name");
-	        
 	        
 	      } catch (JSONException e) {
 	        e.printStackTrace();
@@ -57,6 +56,10 @@ public class User extends Model {
 
 	public String getScreenName() {
 		return screen_name;
+	}
+	
+	public static void saveUser(User u) {
+		u.save();
 	}
 
 }

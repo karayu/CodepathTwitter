@@ -6,27 +6,29 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.codepath.apps.mytwitterapp.models.Tweet;
+import com.codepath.apps.mytwitterapp.models.User;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
-import eu.erikw.PullToRefreshListView;
-import eu.erikw.PullToRefreshListView.OnRefreshListener;
+public class TimelineActivity extends FragmentActivity {
 
-public class TimelineActivity extends Activity {
-
-	private PullToRefreshListView lvTweets;
-	//ArrayList<Tweet> tweets = new ArrayList<Tweet>();;
+	//private PullToRefreshListView lvTweets;
+	ListView lvTweets;
+	ArrayList<Tweet> tweets = new ArrayList<Tweet>();
 	TweetsAdapter adapter;
 	long min_id = 0;
 	long max_id = 0;
+	User user;
+	
 	
 	public static int COMPOSE_REQUEST_CODE = 1;
 	
@@ -34,18 +36,38 @@ public class TimelineActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_timeline);
-		lvTweets = (PullToRefreshListView)findViewById(R.id.lvTweets);
-
+		//lvTweets = (PullToRefreshListView)findViewById(R.id.lvTweets);
+		
+		lvTweets = (ListView)findViewById(R.id.lvTweets);
+		Log.d("DEBUG", "got the listview!");
+		
+		MyTwitterClientApp.getRestClient().getUserAccount( new JsonHttpResponseHandler() {
+			@Override
+			public void onSuccess(JSONObject userDetails) {
+				   user = new User(userDetails);
+			   	   user.save();	
+			}
+			
+			public void onFailure(Throwable e, JSONObject error) {
+				// Handle the failure and alert the user to
+				// retry
+				Log.e("ERROR", e.toString());
+				Toast.makeText(getApplicationContext(), "User not logged in!",
+				        Toast.LENGTH_SHORT).show();
+			}
+			
+		});
+		
 		//populates the initial set of tweets
 		MyTwitterClientApp.getRestClient().getHomeTimeline( new JsonHttpResponseHandler() {
 			@Override
 			public void onSuccess(JSONArray jsonTweets) {
-				ArrayList<Tweet> tweets = Tweet.fromJson(jsonTweets);
+			   ArrayList<Tweet> tweets = Tweet.fromJson(jsonTweets);
+			   
 			   adapter = new TweetsAdapter(getBaseContext(), tweets);
 			   lvTweets.setAdapter(adapter);
 			   
 			   min_id = Tweet.getMinId(tweets, min_id);
-			   //max_id = Tweet.getMinId(tweets, max_id);
 			   		
 			}
 			
@@ -71,7 +93,7 @@ public class TimelineActivity extends Activity {
 		});
 		
         // Set a listener to be invoked when user pulls down
-        lvTweets.setOnRefreshListener(new OnRefreshListener() {
+        /*lvTweets.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh() {
                 // Your code to refresh the list contents
@@ -80,7 +102,7 @@ public class TimelineActivity extends Activity {
                 // place such as when the network request has completed successfully.
                 fetchTimelineAsync(0);
             }
-        });
+        });*/
 	}
 	
 	//called for pulltorefresh. deletes everything and gets a set of new 25 tweets
@@ -97,7 +119,7 @@ public class TimelineActivity extends Activity {
 
                 // ...the data has come back, finish populating listview...
                 // Now we call onRefreshComplete to signify refresh has finished
-            	lvTweets.onRefreshComplete();
+            	//lvTweets.onRefreshComplete();
             }
 
             public void onFailure(Throwable e) {

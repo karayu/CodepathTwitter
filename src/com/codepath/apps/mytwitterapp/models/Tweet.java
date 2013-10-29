@@ -30,8 +30,8 @@ public class Tweet extends Model {
 	  String timestamp;
 	  @Column(name = "text")
 	  String text;
-	  @Column(name = "id")
-	  Long id;
+	  @Column(name = "tweet_id")
+	  Long tweet_id;
 
 	
 	
@@ -43,7 +43,7 @@ public class Tweet extends Model {
 	        this.user = new User( object.getJSONObject("user"));
 	        this.timestamp = object.getString("created_at");
 	        this.text = object.getString("text");
-	        this.id = object.getLong("id");
+	        this.tweet_id = object.getLong("id");
 	        
 	        
 	      } catch (JSONException e) {
@@ -60,19 +60,25 @@ public class Tweet extends Model {
 			JSONObject tweetJson = null;
 			try {
 				tweetJson = jsonArray.getJSONObject(i);
+				
+				Tweet tweet = new Tweet(tweetJson);
+
+				if (tweet != null) {
+					tweets.add(tweet);
+					
+					//Log.d("DEBUG", "saving tweet " + tweet);
+					//saves to persistence via ActiveAndroid
+					User.saveUser(tweet.getUser());
+					
+					tweet.save();
+				}
+				
 			} catch (Exception e) {
 				e.printStackTrace();
 				continue;
 			}
 
-			Tweet tweet = new Tweet(tweetJson);
 
-			if (tweet != null) {
-				tweets.add(tweet);
-				
-				//saves to persistence via ActiveAndroid
-				//tweet.save();
-			}
 		}
 
 		return tweets;
@@ -89,7 +95,7 @@ public class Tweet extends Model {
 	}
 	
 	public Long getTweetId() {
-		return id;
+		return tweet_id;
 	}
 	
 	

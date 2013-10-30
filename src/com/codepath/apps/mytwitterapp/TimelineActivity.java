@@ -96,6 +96,8 @@ public class TimelineActivity extends FragmentActivity implements TabListener {
 	
 	//launches the profile view
 	public void onProfileView(MenuItem mi) {
+		Intent i = new Intent(this, ProfileActivity.class);
+		startActivity(i);
 		
 	}
 	

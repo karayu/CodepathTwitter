@@ -14,17 +14,23 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class MentionsFragment extends TweetsListFragment {
+	
+	public static String TABTYPE = "MentionsTimelineFragment";
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		//populates the initial set of tweets
-		MyTwitterClientApp.getRestClient().getMentions( new JsonHttpResponseHandler() {
+		MyTwitterClientApp.getRestClient().getTimeline( TABTYPE, new JsonHttpResponseHandler() {
 			@Override
 			public void onSuccess(JSONArray jsonTweets) {
               //create tweets array and make listview		
-				getAdapter().addAll(Tweet.fromJson(jsonTweets));
-					
+				ArrayList<Tweet> tweets = Tweet.fromJson(jsonTweets);
+
+				getAdapter().addAll(tweets);
+			    min_id = Tweet.getMinId(tweets, min_id);
+		
 			}
 			
 			public void onFailure(Throwable e, JSONObject error) {
@@ -35,6 +41,8 @@ public class MentionsFragment extends TweetsListFragment {
 				        Toast.LENGTH_SHORT).show();
 			}
 			
-		});
+		}, 0);
 	}
+	
+
 }

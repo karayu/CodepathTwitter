@@ -31,6 +31,7 @@ public class TimelineActivity extends FragmentActivity implements TabListener {
 	
 	ArrayList<Tweet> tweets = new ArrayList<Tweet>();
 	TweetsAdapter adapter;
+	String tabTag = "";
 
 	User user;
 	
@@ -48,6 +49,8 @@ public class TimelineActivity extends FragmentActivity implements TabListener {
 			public void onSuccess(JSONObject userDetails) {
 				   user = new User(userDetails);
 			   	   user.save();	
+				   setupActionBar();
+
 			}
 			
 			public void onFailure(Throwable e, JSONObject error) {
@@ -58,8 +61,11 @@ public class TimelineActivity extends FragmentActivity implements TabListener {
 			
 		});	
 		
-		
-		
+	}
+	
+	public void setupActionBar() {
+		ActionBar ab = getActionBar();
+		ab.setTitle("@"+user.getScreenName());
 	}
 
 	private void setupNavigationTabs() {
@@ -88,6 +94,10 @@ public class TimelineActivity extends FragmentActivity implements TabListener {
 		return true;
 	}
 	
+	//launches the profile view
+	public void onProfileView(MenuItem mi) {
+		
+	}
 	
 	//launches the compose screen
 	public void compose(MenuItem mi) {
@@ -119,6 +129,8 @@ public class TimelineActivity extends FragmentActivity implements TabListener {
 	  }
 	}
 
+	
+	
 	@Override
 	public void onTabReselected(Tab tab, FragmentTransaction ft) {
 		// TODO Auto-generated method stub
@@ -132,10 +144,15 @@ public class TimelineActivity extends FragmentActivity implements TabListener {
 		
 		if(tab.getTag() == "HomeTimelineFragment") {
 			//fragment to home timeline
-			fts.replace(R.id.frame_container, new HomeTimelineFragment());
+			HomeTimelineFragment h = new HomeTimelineFragment();
+			fts.replace(R.id.frame_container, h);
+			h.setTagType("HomeTimelineFragment");
 			
 		} else {
-			fts.replace(R.id.frame_container, new MentionsFragment());
+			MentionsFragment m = new MentionsFragment();
+			fts.replace(R.id.frame_container, m);
+			m.setTagType("MentionsTimelineFragment");
+
 		}
 		
 		fts.commit();
@@ -144,7 +161,10 @@ public class TimelineActivity extends FragmentActivity implements TabListener {
 	@Override
 	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
 		// TODO Auto-generated method stub
-		
 	} 
+	
+	public String getTab() {
+		return tabTag;
+	}
 
 }

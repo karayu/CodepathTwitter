@@ -108,7 +108,7 @@ public class Tweet extends Model {
       return new Select().from(Tweet.class).orderBy("id DESC").limit("300").execute();
 	}
 	
-	//given an array of tweets, finds the lowest id of all of them
+	//given an array of tweets, finds the lowest id of all of them. Used for infinite scroll. lower ids are older tweets
 	public static long getMinId(ArrayList<Tweet> tweets, long initial_min_id) {
 		long curr_id = 0;
 		long min_id = initial_min_id;

@@ -33,63 +33,49 @@ public class TwitterClient extends OAuthBaseClient {
         super(context, REST_API_CLASS, REST_URL, REST_CONSUMER_KEY, REST_CONSUMER_SECRET, REST_CALLBACK_URL);
     }
     
-    public void getHomeTimeline(AsyncHttpResponseHandler handler, long max_id) {
-    	String url = getApiUrl("statuses/home_timeline.json");
+    //get tweet timeline according to whether they're all tweets or mentions
+    public void getTimeline(String type, AsyncHttpResponseHandler handler, long max_id) {
+    	
+    	String url = "";
+    	
+    	if( type == "HomeTimelineFragment") {
+    		url= getApiUrl("statuses/home_timeline.json");
+    	} else if ( type == "MentionsTimelineFragment") {
+    		url= getApiUrl("statuses/mentions_timeline.json");
+    	} else {
+    		Log.d("DEBUG", "Not sure which tab you are on. Tab is: " + type);
+    	}
     	
 	   	RequestParams params = new RequestParams();
 		params.put("count", String.valueOf(25)); 
 
 	   	//if max_id != 0, it's not the first load and we set max_id
     	if( max_id != 0 ) {
-    		//only return tweets smaller than the passed max_id, this is for scrolling
+    		//only return tweets smaller than the passed max_id (i.e. older), this is for scrolling
         	params.put("max_id", String.valueOf(max_id-1));
     	}
     	
     	client.get(url, params, handler);
-
-    	//not sure how request only certain fields vs limit to fields with certain values
-    	/*RequestParams params = new RequestParams();
-    	params.put("page", String.valueOf(page));
-    	getClient().get(apiUrl, params, handler);*/
-    	
-
     }
     
-    public void getMentions(AsyncHttpResponseHandler handler) {
+    /*
+    public void getMentions(AsyncHttpResponseHandler handler, long max_id) {
     	String url = getApiUrl("statuses/mentions_timeline.json");
-    	
-	   	//RequestParams params = new RequestParams();
-		//params.put("count", String.valueOf(25)); 
-		
-    	client.get(url, null, handler);
-    	
-    }
-    
-    //gets new tweets since the id specified, could have been used for pull to request
-    public void getNewTweets(AsyncHttpResponseHandler handler, long since_id) {
-    	String url = getApiUrl("statuses/home_timeline.json");
     	
 	   	RequestParams params = new RequestParams();
 		params.put("count", String.valueOf(25)); 
-
+		
 	   	//if max_id != 0, it's not the first load and we set max_id
-    	if( since_id != 0 ) {
-    		//only return tweets smaller than the passed max_id, this is for scrolling
-        	params.put("since_id", String.valueOf(since_id));
-    	}
-    	else {
-    		Log.d("DEBUG", "latest tweet id not set");
+    	if( max_id != 0 ) {
+    		//only return tweets smaller than the passed max_id (i.e. older), this is for scrolling
+        	params.put("max_id", String.valueOf(max_id-1));
     	}
     	
-    	client.get(url, params, handler);
-
-    	//not sure how request only certain fields vs limit to fields with certain values
-    	/*RequestParams params = new RequestParams();
-    	params.put("page", String.valueOf(page));
-    	getClient().get(apiUrl, params, handler);*/
+		
+    	client.get(url, null, handler);
     	
-
-    }
+    }*/
+   
     
     //get the user's account info
     public void getUserAccount(AsyncHttpResponseHandler handler) {

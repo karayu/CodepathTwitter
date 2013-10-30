@@ -104,6 +104,27 @@ public class TwitterClient extends OAuthBaseClient {
     	String apiUrl = getApiUrl("statuses/user_timeline.json");
     	client.get(apiUrl, null, handler);
     }
+    
+    //getting other user's info
+    public void getUserInfo(String screenname, AsyncHttpResponseHandler handler, long max_id) {
+    	
+		Log.d("DEBUG", "twitter client screenname is for: " + screenname);
+
+    	String apiUrl = getApiUrl("statuses/user_timeline.json");
+    	RequestParams params = new RequestParams();
+    	params.put("screen_name", screenname);
+    	
+    	params.put("count", String.valueOf(25)); 
+
+	   	//if max_id != 0, it's not the first load and we set max_id
+    	if( max_id != 0 ) {
+    		//only return tweets smaller than the passed max_id (i.e. older), this is for scrolling
+        	params.put("max_id", String.valueOf(max_id-1));
+    	}
+    	
+    	
+    	client.get(apiUrl, params, handler);
+    }
         
     
     /* 1. Define the endpoint URL with getApiUrl and pass a relative path to the endpoint

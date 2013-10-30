@@ -10,21 +10,68 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.codepath.apps.mytwitterapp.fragments.UserTimelineFragment;
 import com.codepath.apps.mytwitterapp.models.User;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class ProfileActivity extends FragmentActivity {
 
+	User u;
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        loadProfileInfo();
+        
+        //putting in a try/catch because i'm not sure what happens when you didn't store soemthing in an intent
+        try {
+        	String screenname = (String) getIntent().getSerializableExtra("screenname");
+        	
+        	//UserTimelineFragment utfrag = (UserTimelineFragment)findViewById(R.id.fragmentUserTimeline);
+        		//	setScreenname(screenname);
+        	
+    		Log.d("DEBUG", "intent's passed screenname is: " + screenname);
+
+        	if(screenname!=null && !screenname.isEmpty())
+        	{
+        		loadUserProfileInfo(screenname);
+        	}
+        	else {
+                loadProfileInfo();
+        	}
+        }
+        catch (Exception e) {
+        	e.printStackTrace();
+        }
 
     }
 
-    public void loadProfileInfo() {
+    private void loadUserProfileInfo(String userscreenname) {
+    	
+  		  Log.d("DEBUG", "loading user profile info for: " + userscreenname);
+    	  MyTwitterClientApp.getRestClient().getUserInfo( userscreenname, new JsonHttpResponseHandler() {
+
+  			@Override
+  			public void onSuccess(JSONObject json) {
+  	  		      Log.d("DEBUG", "returned json: " + json);
+
+  				  User u = new User(json);
+  				  getActionBar().setTitle("@"+u.getScreenName());
+  				  populateProfileHeader(u);
+
+  			}
+  			
+  			public void onFailure(Throwable e, JSONObject error) {
+  				Log.e("ERROR", e.toString());
+  				Toast.makeText(getApplicationContext(), "Could not get your info!",
+  				        Toast.LENGTH_SHORT).show();
+  			}
+  			
+  		}, 0);	 		
+	}
+
+	public void loadProfileInfo() {
         MyTwitterClientApp.getRestClient().getMyInfo( new JsonHttpResponseHandler() {
 			@Override
 			public void onSuccess(JSONObject json) {

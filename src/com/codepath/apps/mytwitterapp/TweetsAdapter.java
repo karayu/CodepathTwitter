@@ -41,13 +41,13 @@ public class TweetsAdapter extends ArrayAdapter<Tweet> {
 		ImageLoader.getInstance().displayImage(tweet.getUser().getProfileImageUrl(), imageView);
 		imageView.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-        		Intent i = new Intent(v.getContext(), ProfileActivity.class);
+        		Intent i = new Intent(getContext(), ProfileActivity.class);
         		//pass string of the user's name
         		
         		Log.d("DEBUG", "tag value is: " + v.getTag().toString());
 
         		i.putExtra("screenname", v.getTag().toString());
-        		v.getContext().startActivity(i);
+        		getContext().startActivity(i);
             }
             
 				

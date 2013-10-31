@@ -18,32 +18,28 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 public class ProfileActivity extends FragmentActivity {
 
 	User u;
+	UserTimelineFragment utFragment;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         
-        //putting in a try/catch because i'm not sure what happens when you didn't store soemthing in an intent
-        try {
-        	String screenname = (String) getIntent().getSerializableExtra("screenname");
-        	
-        	//UserTimelineFragment utfrag = (UserTimelineFragment)findViewById(R.id.fragmentUserTimeline);
-        		//	setScreenname(screenname);
-        	
-    		Log.d("DEBUG", "intent's passed screenname is: " + screenname);
+        utFragment = (UserTimelineFragment)getSupportFragmentManager().findFragmentById(R.id.fragmentUserTimeline);
+        //set user screenname
+        
+    	String screenname = getIntent().getStringExtra("screenname");
+		utFragment.setScreenname(screenname);
+		Log.d("DEBUG", "intent's passed screenname is: " + screenname);
 
-        	if(screenname!=null && !screenname.isEmpty())
-        	{
-        		loadUserProfileInfo(screenname);
-        	}
-        	else {
-                loadProfileInfo();
-        	}
-        }
-        catch (Exception e) {
-        	e.printStackTrace();
-        }
+    	if(screenname!=null && !screenname.isEmpty())
+    	{
+    		loadUserProfileInfo(screenname);
+    	}
+    	else {
+            loadProfileInfo();
+    	}
+
 
     }
 
@@ -68,7 +64,7 @@ public class ProfileActivity extends FragmentActivity {
   				        Toast.LENGTH_SHORT).show();
   			}
   			
-  		}, 0);	 		
+  		});	 		
 	}
 
 	public void loadProfileInfo() {

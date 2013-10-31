@@ -22,12 +22,14 @@ public class UserTimelineFragment extends TweetsListFragment {
 		super.onCreate(savedInstanceState);
 		
 		//populates the initial set of tweets
-		MyTwitterClientApp.getRestClient().getUserTimeline( new JsonHttpResponseHandler() {
+		MyTwitterClientApp.getRestClient().getUserTimeline( screen_name, new JsonHttpResponseHandler() {
 			@Override
 			public void onSuccess(JSONArray jsonTweets) {
               //create tweets array and make listview		
 				ArrayList<Tweet> tweets = Tweet.fromJson(jsonTweets);
 
+				
+				Log.d("DEBUG", "screenname is: " + screen_name);
 				getAdapter().addAll(tweets);
 			    min_id = Tweet.getMinId(tweets, min_id);
 		
@@ -48,17 +50,20 @@ public class UserTimelineFragment extends TweetsListFragment {
 		screen_name = s;
 	}
 	
-  /*@Override
+   @Override
    public void fetchTimelineAsync(int page) {
-	   	MyTwitterClientApp.getRestClient().getUserInfo( screen_name, new JsonHttpResponseHandler() {
+	   	MyTwitterClientApp.getRestClient().getUserTimeline( screen_name, new JsonHttpResponseHandler() {
 	           public void onSuccess(JSONArray json) {
 	           	
+	        	  Log.d("DEBUG", "pull down refresh beign called from UserTime and using correct twitter client call");
 	              ArrayList<Tweet> tweets = Tweet.fromJson(json);
+	              
+	              
 				   adapter.clear();
 				   adapter.addAll(tweets);
 				   
 				   //update min_id for the oldest tweet we have
-				   min_id = Tweet.getMinId(tweets, min_id);
+				   //min_id = Tweet.getMinId(tweets, min_id);
 
 	               // ...the data has come back, finish populating listview...
 	               // Now we call onRefreshComplete to signify refresh has finished
@@ -68,13 +73,13 @@ public class UserTimelineFragment extends TweetsListFragment {
 	           public void onFailure(Throwable e) {
 	               Log.d("DEBUG", "Fetch timeline error: " + e.toString());
 	           }
-	       }, 0);
+	       });
 	   }
 
 	//called on endless scroll
 	@Override
 	public void loadMoreTweets() {
-		MyTwitterClientApp.getRestClient().getUserInfo( screen_name, new JsonHttpResponseHandler() {
+		MyTwitterClientApp.getRestClient().getUserTimeline( screen_name, new JsonHttpResponseHandler() {
 			@Override
 			public void onSuccess(JSONArray jsonTweets) {
 				ArrayList<Tweet> tweets = Tweet.fromJson(jsonTweets);
@@ -92,7 +97,7 @@ public class UserTimelineFragment extends TweetsListFragment {
 				        Toast.LENGTH_SHORT).show();
 			}
 
-		}, min_id);
-	}*/
+		}/*, min_id*/);
+	}
 			
 }

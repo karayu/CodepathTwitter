@@ -23,7 +23,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import eu.erikw.PullToRefreshListView;
 import eu.erikw.PullToRefreshListView.OnRefreshListener;
 
-public class TweetsListFragment extends Fragment {
+public abstract class TweetsListFragment extends Fragment {
 	TweetsAdapter adapter;
 	PullToRefreshListView lvTweets;
 	long min_id = 0;
@@ -38,6 +38,7 @@ public class TweetsListFragment extends Fragment {
 	
 	@Override 
 	public void onActivityCreated(Bundle savedInstanceState) {
+		
 		super.onActivityCreated(savedInstanceState);
 		   ArrayList<Tweet> tweets = new ArrayList<Tweet>();
 		   adapter = new TweetsAdapter(getActivity(), tweets);
@@ -67,10 +68,13 @@ public class TweetsListFragment extends Fragment {
 	}
 	
 
-   public void fetchTimelineAsync(int page) {
+   public abstract void fetchTimelineAsync(int page); 
+ 	    /*Log.d("DEBUG", "fetchtimline from tweetslistfragment");
+
 	   	MyTwitterClientApp.getRestClient().getTimeline( tabtype, new JsonHttpResponseHandler() {
 	           public void onSuccess(JSONArray json) {
 	           	
+	        	  
 	              ArrayList<Tweet> tweets = Tweet.fromJson(json);
 				   adapter.clear();
 				   adapter.addAll(tweets);
@@ -86,11 +90,13 @@ public class TweetsListFragment extends Fragment {
 	           public void onFailure(Throwable e) {
 	               Log.d("DEBUG", "Fetch timeline error: " + e.toString());
 	           }
-	       }, 0);
-	   }
+	       }, 0);*/
 
 	//called on endless scroll
-	public void loadMoreTweets() {
+   public abstract void loadMoreTweets();
+	/*public void loadMoreTweets() {
+ 	    Log.d("DEBUG", "loadmoretweets from tweetslistfragment");
+
 		MyTwitterClientApp.getRestClient().getTimeline( tabtype, new JsonHttpResponseHandler() {
 			@Override
 			public void onSuccess(JSONArray jsonTweets) {
@@ -110,7 +116,7 @@ public class TweetsListFragment extends Fragment {
 			}
 
 		}, min_id);
-	}
+	}*/
 		
 	   
 	   

@@ -97,7 +97,8 @@ public class TimelineActivity extends FragmentActivity implements TabListener {
 	//launches the profile view
 	public void onProfileView(MenuItem mi) {
 		Intent i = new Intent(this, ProfileActivity.class);
-		//i.putExtra("screenname", user.getScreenName());
+		i.putExtra("screenname", user.getScreenName());
+		i.putExtra("current_user", true);
 		startActivity(i);
 	}
 	
@@ -147,14 +148,10 @@ public class TimelineActivity extends FragmentActivity implements TabListener {
 		if(tab.getTag() == "HomeTimelineFragment") {
 			//fragment to home timeline
 			HomeTimelineFragment h = new HomeTimelineFragment();
-			fts.replace(R.id.frame_container, h);
-			h.setTagType("HomeTimelineFragment");
-			
+			fts.replace(R.id.frame_container, h);			
 		} else {
 			MentionsFragment m = new MentionsFragment();
 			fts.replace(R.id.frame_container, m);
-			m.setTagType("MentionsTimelineFragment");
-
 		}
 		
 		fts.commit();

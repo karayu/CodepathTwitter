@@ -90,19 +90,22 @@ public class TwitterClient extends OAuthBaseClient {
     }
     
     //get user's set of tweets
-    public void getUserTimeline(String screenname, AsyncHttpResponseHandler handler) {
+    public void getUserTimeline(String screenname, long max_id, AsyncHttpResponseHandler handler) {
     	String apiUrl = getApiUrl("statuses/user_timeline.json");
+    	RequestParams params = new RequestParams();
+
+     	//if max_id != 0, it's not the first load and we set max_id
+    	if( max_id != 0 ) {
+    		//only return tweets smaller than the passed max_id (i.e. older), this is for scrolling
+        	params.put("max_id", String.valueOf(max_id-1));
+    	}    	
     	
     	Log.d("DEBUG", "in user timeline, screenname is " + screenname);
     	if(screenname != null && !screenname.isEmpty()) {
-        	RequestParams params = new RequestParams();
         	params.put("screen_name", screenname);
-        	client.get(apiUrl, params, handler);
-    	}
-    	else {
-        	client.get(apiUrl, null, handler);
     	}
 
+    	client.get(apiUrl, params, handler);
     }
     
     //getting other user's info

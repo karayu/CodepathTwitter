@@ -27,9 +27,7 @@ public abstract class TweetsListFragment extends Fragment {
 	TweetsAdapter adapter;
 	PullToRefreshListView lvTweets;
 	long min_id = 0;
-	
-	String tabtype = "";
-
+	boolean refresh = false;
 	
 	@Override
 	public View onCreateView(LayoutInflater inf, ViewGroup parent, Bundle savedInstanceState) {
@@ -51,7 +49,8 @@ public abstract class TweetsListFragment extends Fragment {
 		    lvTweets.setOnScrollListener(new EndlessScrollListener() {
 				@Override
 				public void onLoadMore(int page, int totalItemsCount) {
-					loadMoreTweets();
+	                fetchTimelineAsync();
+	                
 				}
 
 			 });
@@ -61,64 +60,16 @@ public abstract class TweetsListFragment extends Fragment {
 	        lvTweets.setOnRefreshListener(new OnRefreshListener() {
 	            @Override
 	            public void onRefresh() {
-	                fetchTimelineAsync(0);
+	            	refresh = true;
+	                fetchTimelineAsync();
 	            }
 	        });
 			
 	}
 	
 
-   public abstract void fetchTimelineAsync(int page); 
- 	    /*Log.d("DEBUG", "fetchtimline from tweetslistfragment");
+   public abstract void fetchTimelineAsync(); 
 
-	   	MyTwitterClientApp.getRestClient().getTimeline( tabtype, new JsonHttpResponseHandler() {
-	           public void onSuccess(JSONArray json) {
-	           	
-	        	  
-	              ArrayList<Tweet> tweets = Tweet.fromJson(json);
-				   adapter.clear();
-				   adapter.addAll(tweets);
-				   
-				   //update min_id for the oldest tweet we have
-				   min_id = Tweet.getMinId(tweets, min_id);
-
-	               // ...the data has come back, finish populating listview...
-	               // Now we call onRefreshComplete to signify refresh has finished
-	           	  lvTweets.onRefreshComplete();
-	           }
-
-	           public void onFailure(Throwable e) {
-	               Log.d("DEBUG", "Fetch timeline error: " + e.toString());
-	           }
-	       }, 0);*/
-
-	//called on endless scroll
-   public abstract void loadMoreTweets();
-	/*public void loadMoreTweets() {
- 	    Log.d("DEBUG", "loadmoretweets from tweetslistfragment");
-
-		MyTwitterClientApp.getRestClient().getTimeline( tabtype, new JsonHttpResponseHandler() {
-			@Override
-			public void onSuccess(JSONArray jsonTweets) {
-				ArrayList<Tweet> tweets = Tweet.fromJson(jsonTweets);
-				adapter.addAll(tweets);
-                min_id = Tweet.getMinId(Tweet.fromJson(jsonTweets), min_id);
-
-			}
-
-			public void onFailure(Throwable e, JSONObject error) {
-				// Handle the failure and alert the user to
-				// retry
-			
-				Log.e("ERROR", e.toString());
-				Toast.makeText(getActivity(), "Tweets not loaded",
-				        Toast.LENGTH_SHORT).show();
-			}
-
-		}, min_id);
-	}*/
-		
-	   
 	   
 	public TweetsAdapter getAdapter() {
 		return adapter;
@@ -132,9 +83,5 @@ public abstract class TweetsListFragment extends Fragment {
    public long getMinId() {
 	   return min_id;
    }*/
-	
-   public void setTagType( String type) {
-	   tabtype = type;
-   }
-	
+
 }

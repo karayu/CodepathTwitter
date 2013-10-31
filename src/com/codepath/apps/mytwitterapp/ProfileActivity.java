@@ -30,19 +30,22 @@ public class ProfileActivity extends FragmentActivity {
         
     	String screenname = getIntent().getStringExtra("screenname");
 		utFragment.setScreenname(screenname);
+		
 		Log.d("DEBUG", "intent's passed screenname is: " + screenname);
 
-    	if(screenname!=null && !screenname.isEmpty())
+		boolean curr_user = getIntent().getExtras().getBoolean("current_user");
+    	if(curr_user)
     	{
-    		loadUserProfileInfo(screenname);
+            loadProfileInfo();
     	}
     	else {
-            loadProfileInfo();
+    		loadUserProfileInfo(screenname);
     	}
 
 
     }
 
+    //load profile information for other users
     private void loadUserProfileInfo(String userscreenname) {
     	
   		  Log.d("DEBUG", "loading user profile info for: " + userscreenname);
@@ -67,6 +70,7 @@ public class ProfileActivity extends FragmentActivity {
   		});	 		
 	}
 
+    //load profile info for current user
 	public void loadProfileInfo() {
         MyTwitterClientApp.getRestClient().getMyInfo( new JsonHttpResponseHandler() {
 			@Override
